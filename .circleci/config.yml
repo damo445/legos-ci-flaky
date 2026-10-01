@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Install test deps
+          command: pip install --quiet pytest
+      - run:
+          name: Run unit tests
+          command: |
+            mkdir -p test-results
+            pytest --junitxml=test-results/junit.xml -v
+      - store_test_results:
+          path: test-results
+          when: always
+      - store_artifacts:
+          path: test-results
+          when: always
+
+workflows:
+  ci:
+    jobs:
+      - test
